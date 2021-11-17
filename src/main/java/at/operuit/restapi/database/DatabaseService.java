@@ -24,7 +24,7 @@ public record DatabaseService(Credentials credentials) {
         CompletableFuture<QueryResult> future = new CompletableFuture<>();
         MariadbConnection connection = getConnection();
         try {
-            QueryResultFactory resultFactory = new QueryResultFactory();
+            QueryResultFactory resultFactory = getQueryResultFactory();
             Mono.from(bindAll(connection.createStatement(statement.get()), args).execute()).blockOptional().ifPresent(mariadbResult -> mariadbResult.map(Pair::new).subscribe(pair -> {
                 Row row = pair.key();
                 RowMetadata metadata = pair.value();
