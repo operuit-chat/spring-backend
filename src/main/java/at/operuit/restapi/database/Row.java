@@ -15,7 +15,7 @@ public record Row<T>(List<Pair<String, T>> fields) {
         return fields.stream().filter(field -> field.key().equals(name)).findFirst().orElse(new Pair<>(name, null));
     }
     
-    public RowOptional secure() {
+    public RowOptional safe() {
         return new RowOptional();
     }
     
