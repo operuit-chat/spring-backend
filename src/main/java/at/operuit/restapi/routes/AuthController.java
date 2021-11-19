@@ -5,7 +5,10 @@ import at.operuit.restapi.database.query.QueryResult;
 import at.operuit.restapi.models.Response;
 import at.operuit.restapi.util.data.Hashing;
 import at.operuit.restapi.util.data.RateLimiter;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -20,7 +23,7 @@ public class AuthController {
         if (username == null || displayName == null || password == null
                 || username.length() < 3 || displayName.length() < 3 || password.length() < 3
                 || username.length() != 64 || displayName.length() > 128 || password.length() > 4096)
-            return new Response<>(100, "One or more arguments provided are null or invalid");
+            return new Response<>(100, "One or more arguments provided are missing or invalid");
         CompletableFuture<QueryResult> query = OperuitMain.getInstance().getDatabaseService().execute(() -> "SELECT * FROM `users` WHERE `username` = ?", username);
         QueryResult result = query.join();
         if (result.getRows().size() > 0)
