@@ -32,9 +32,7 @@ public record DatabaseService(Credentials credentials) {
                 for (String column : metadata.getColumnNames())
                     result.add(new Pair<>(column, row.get(column)));
                 resultFactory.addRow(new at.operuit.restapi.database.Row<>(result));
-            }, null, () -> future.complete(resultFactory.make())));
-        } catch (Exception e) {
-            future.completeExceptionally(e);
+            }, future::completeExceptionally, () -> future.complete(resultFactory.make())));
         } finally {
             connection.close();
         }
