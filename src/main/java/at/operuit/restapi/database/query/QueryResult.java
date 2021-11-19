@@ -1,5 +1,6 @@
-package at.operuit.restapi.database;
+package at.operuit.restapi.database.query;
 
+import at.operuit.restapi.database.Row;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

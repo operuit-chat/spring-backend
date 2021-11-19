@@ -1,5 +1,7 @@
 package at.operuit.restapi.database;
 
+import at.operuit.restapi.database.query.QueryResult;
+import at.operuit.restapi.database.query.QueryResultFactory;
 import at.operuit.restapi.util.data.Pair;
 import io.r2dbc.spi.Row;
 import io.r2dbc.spi.RowMetadata;
