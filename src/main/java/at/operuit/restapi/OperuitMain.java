@@ -2,7 +2,6 @@ package at.operuit.restapi;
 
 import at.operuit.restapi.database.Credentials;
 import at.operuit.restapi.database.DatabaseService;
-import at.operuit.restapi.models.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 

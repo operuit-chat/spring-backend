@@ -1,22 +1,22 @@
 package at.operuit.restapi.routes;
 
 import at.operuit.restapi.OperuitMain;
-import at.operuit.restapi.database.QueryResult;
+import at.operuit.restapi.database.query.QueryResult;
 import at.operuit.restapi.models.Response;
-import at.operuit.restapi.models.User;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import at.operuit.restapi.util.data.Hashing;
+import at.operuit.restapi.util.data.RateLimiter;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.concurrent.CompletableFuture;
 
 @RestController
 @ResponseBody
-public class RegisterController {
+public class AuthController {
 
-    @PostMapping("/register")
-    public Response<String> register(String username, String displayName, String password) {
+    @GetMapping("/register")
+    public Response<String> register(@RequestHeader("User-Data") String requestData, String username, String displayName, String password) {
+        if (!RateLimiter.compute(Hashing.hash(requestData)).acquire())
+            return new Response<>(50, "Rate limit exceeded");
         if (username == null || displayName == null || password == null
                 || username.length() < 3 || displayName.length() < 3 || password.length() < 3
                 || username.length() != 64 || displayName.length() > 128 || password.length() > 4096)
