@@ -27,7 +27,7 @@ public class AuthController {
             return new Response<>(100, "One or more arguments provided are missing or invalid");
         CompletableFuture<QueryResult> query = OperuitMain.getInstance().getDatabaseService().execute(() -> "SELECT * FROM `users` WHERE `username` = ?", username);
         QueryResult result = query.join();
-        if (result.getRows().size() > 0)
+        if (result.hasNext())
             return new Response<>(101, "Username already exists");
         OperuitMain.getInstance().getDatabaseService().execute(() -> "INSERT INTO `users` (`username`, `display_name`, `password`) VALUES (?, ?, ?)",
                 username, displayName, password).thenAccept((queryResult -> System.out.println("User " + username + " registered")));
@@ -46,7 +46,7 @@ public class AuthController {
             return new Response<>(100, "One or more arguments provided are missing or invalid");
         CompletableFuture<QueryResult> query = OperuitMain.getInstance().getDatabaseService().execute(() -> "SELECT * FROM `users` WHERE `username` = ? AND `password` = ?", username, password);
         QueryResult result = query.join();
-        if (result.getRows().size() == 0)
+        if (!result.hasNext())
             return new Response<>(102, "Auth error");
         return new Response<>(200, "Success");
     }
@@ -59,7 +59,7 @@ public class AuthController {
             return new Response<>(100, "One or more arguments provided are missing or invalid");
         CompletableFuture<QueryResult> query = OperuitMain.getInstance().getDatabaseService().execute(() -> "SELECT * FROM `users` WHERE `username` = ?", username);
         QueryResult result = query.join();
-        if (result.getRows().size() == 0)
+        if (!result.hasNext())
             return new Response<>(101, "User does not exist");
         return new Response<>(200, result.next().get("password").toString().split(":", 2)[1]);
     }
