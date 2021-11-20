@@ -11,11 +11,12 @@ public class RateLimiter {
             .expireAfterWrite(1, TimeUnit.MINUTES)
             .build();
 
-    private final int limit = 5;
+    private final int limit;
     private int remaining;
     private long reset;
 
-    public RateLimiter() {
+    public RateLimiter(int limit) {
+        this.limit = limit;
         this.remaining = limit;
         this.reset = System.currentTimeMillis() + 1000;
     }
@@ -32,8 +33,8 @@ public class RateLimiter {
         return true;
     }
 
-    public static RateLimiter compute(String key) {
-        return LIMITER_CACHE.asMap().computeIfAbsent(key, (k) -> new RateLimiter());
+    public static RateLimiter compute(String key, int limit) {
+        return LIMITER_CACHE.asMap().computeIfAbsent(key, (k) -> new RateLimiter(limit));
     }
 
 }

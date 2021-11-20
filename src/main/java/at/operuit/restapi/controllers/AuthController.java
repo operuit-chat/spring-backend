@@ -1,4 +1,4 @@
-package at.operuit.restapi.routes;
+package at.operuit.restapi.controllers;
 
 import at.operuit.restapi.OperuitMain;
 import at.operuit.restapi.database.query.QueryResult;
@@ -15,8 +15,8 @@ import java.util.concurrent.CompletableFuture;
 public class AuthController {
 
     @PostMapping("/register")
-    public Response<String> register(@RequestHeader("User-Data") String requestData, @RequestBody User user) {
-        if (RateLimiter.compute(Hashing.hash(requestData)).get())
+    public Response<String> register(@RequestHeader("User-Data") String requestData, @RequestHeader("User-TempDevId") String userDeviceTempId, @RequestBody User user) {
+        if (RateLimiter.compute(Hashing.hash(requestData + userDeviceTempId), 1).get())
             return new Response<>(50, "Rate limit exceeded");
         String username = user.username();
         String displayName = user.displayName();
@@ -35,8 +35,8 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public Response<String> login(@RequestHeader("User-Data") String requestData, @RequestBody User user) {
-        if (RateLimiter.compute(Hashing.hash(requestData)).get())
+    public Response<String> login(@RequestHeader("User-Data") String requestData, @RequestHeader("User-TempDevId") String userDeviceTempId, @RequestBody User user) {
+        if (RateLimiter.compute(Hashing.hash(requestData + userDeviceTempId), 1).get())
             return new Response<>(50, "Rate limit exceeded");
         String username = user.username();
         String password = user.password();
@@ -52,8 +52,8 @@ public class AuthController {
     }
 
     @GetMapping("/salt")
-    public Response<String> retrieveSalt(@RequestHeader("User-Data") String requestData, @RequestParam String username) {
-        if (RateLimiter.compute(Hashing.hash(requestData)).get())
+    public Response<String> retrieveSalt(@RequestHeader("User-Data") String requestData, @RequestHeader("User-TempDevId") String userDeviceTempId, @RequestParam String username) {
+        if (RateLimiter.compute(Hashing.hash(requestData + userDeviceTempId), 1).get())
             return new Response<>(50, "Rate limit exceeded");
         if (username == null || username.length() != 64)
             return new Response<>(100, "One or more arguments provided are missing or invalid");
