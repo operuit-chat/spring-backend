@@ -61,7 +61,7 @@ public class AuthController {
         QueryResult result = query.join();
         if (result.getRows().size() == 0)
             return new Response<>(101, "User does not exist");
-        return new Response<>(200, result.getRows().get(0).get("password").toString().split(":", 2)[1]);
+        return new Response<>(200, result.next().get("password").toString().split(":", 2)[1]);
     }
 
 }
