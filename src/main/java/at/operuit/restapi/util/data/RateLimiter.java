@@ -20,16 +20,16 @@ public class RateLimiter {
         this.reset = System.currentTimeMillis() + 1000;
     }
 
-    public boolean acquire() {
+    public boolean get() {
         if (System.currentTimeMillis() > reset) {
             remaining = limit;
             reset = System.currentTimeMillis() + 1000;
         }
         if (remaining > 0) {
             remaining--;
-            return true;
+            return false;
         }
-        return false;
+        return true;
     }
 
     public static RateLimiter compute(String key) {
