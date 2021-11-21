@@ -19,7 +19,8 @@ public class OperuitMain {
         // Get credentials and initialize database service
         Credentials credentials = new ObjectMapper().readValue(getClass().getClassLoader().getResourceAsStream("credentials.json"), Credentials.class);
         databaseService = new DatabaseService(credentials);
-        databaseService.execute(() -> "CREATE TABLE IF NOT EXISTS `users` (`username` VARCHAR(64) NOT NULL PRIMARY KEY, `display_name` VARCHAR(128) NOT NULL, `password` VARCHAR(4096) NOT NULL, `birthday` VARCHAR(24), `gender` VARCHAR(24), `private_key` TEXT)").thenAccept(queryResult -> {});
+        databaseService.execute(() -> "CREATE TABLE IF NOT EXISTS `users` (`username` VARCHAR(64) NOT NULL PRIMARY KEY, `display_name` VARCHAR(128) NOT NULL, `password` VARCHAR(4096) NOT NULL, `birthday` VARCHAR(24), `gender` VARCHAR(24))").thenAccept(queryResult -> {
+        });
     }
     
 }

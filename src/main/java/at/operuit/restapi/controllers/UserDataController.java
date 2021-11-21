@@ -31,7 +31,7 @@ public class UserDataController {
         if (!result.hasNext())
             return new Response<>(101, "Auth error");
         Row<?> row = result.next();
-        user = new User(null, (String) row.get("display_name").value(), null, (String) row.get("birthday").value(), (String) row.get("gender").value(), (String) row.get("private_key").value());
+        user = new User(null, (String) row.get("display_name").value(), null, (String) row.get("birthday").value(), (String) row.get("gender").value());
         return new Response<>(200, user);
     }
 
@@ -53,8 +53,7 @@ public class UserDataController {
         String displayName = user.displayName() == null ? (String) row.get("display_name").value() : user.displayName();
         String birthday = user.birthday() == null ? (String) row.get("birthday").value() : user.birthday();
         String gender = user.gender() == null ? (String) row.get("gender").value() : user.gender();
-        String privateKey = user.privateKey() == null ? (String) row.get("private_key").value() : user.privateKey();
-        OperuitMain.getInstance().getDatabaseService().execute(() -> "UPDATE `users` SET `display_name` = ?, `birthday` = ?, `gender` = ?, `private_key` = ? WHERE `username` = ?", displayName, birthday, gender, privateKey, username).join();
+        OperuitMain.getInstance().getDatabaseService().execute(() -> "UPDATE `users` SET `display_name` = ?, `birthday` = ?, `gender` = ? WHERE `username` = ?", displayName, birthday, gender, username).join();
         return new Response<>(200, "Success");
     }
 
