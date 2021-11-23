@@ -15,7 +15,7 @@ public class RateLimiter {
     private int remaining;
     private long reset;
 
-    public RateLimiter(int limit) {
+    private RateLimiter(int limit) {
         this.limit = limit;
         this.remaining = limit;
         this.reset = System.currentTimeMillis() + 1000;
