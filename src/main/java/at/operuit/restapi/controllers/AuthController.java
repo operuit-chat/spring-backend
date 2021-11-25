@@ -14,6 +14,7 @@ import java.util.concurrent.CompletableFuture;
 @ResponseBody
 public class AuthController {
 
+    @CrossOrigin
     @PostMapping("/register")
     public Response<String> register(@RequestHeader("User-Data") String requestData, @RequestHeader("User-TempDevId") String userDeviceTempId, @RequestBody User user) {
         if (RateLimiter.compute(Hashing.hash(requestData + userDeviceTempId), 1).get())
@@ -34,6 +35,7 @@ public class AuthController {
         return new Response<>(200, "Success");
     }
 
+    @CrossOrigin
     @PostMapping("/login")
     public Response<String> login(@RequestHeader("User-Data") String requestData, @RequestHeader("User-TempDevId") String userDeviceTempId, @RequestBody User user) {
         if (RateLimiter.compute(Hashing.hash(requestData + userDeviceTempId), 1).get())
@@ -51,6 +53,7 @@ public class AuthController {
         return new Response<>(200, "Success");
     }
 
+    @CrossOrigin
     @GetMapping("/salt")
     public Response<String> retrieveSalt(@RequestHeader("User-Data") String requestData, @RequestHeader("User-TempDevId") String userDeviceTempId, @RequestParam String username) {
         if (RateLimiter.compute(Hashing.hash(requestData + userDeviceTempId), 1).get())

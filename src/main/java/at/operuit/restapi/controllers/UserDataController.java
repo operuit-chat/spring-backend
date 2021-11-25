@@ -16,6 +16,7 @@ import java.util.concurrent.CompletableFuture;
 @ResponseBody
 public class UserDataController {
 
+    @CrossOrigin
     @PostMapping("/data")
     public Response<Object> getUserData(@RequestHeader("User-Data") String requestData, @RequestHeader("User-TempDevId") String userDeviceTempId, @RequestBody User user) {
         if (RateLimiter.compute(Hashing.hash(requestData + userDeviceTempId), 1).get())
@@ -35,6 +36,7 @@ public class UserDataController {
         return new Response<>(200, user);
     }
 
+    @CrossOrigin
     @PatchMapping("/data")
     public Response<String> updateData(@RequestHeader("User-Data") String requestData, @RequestHeader("User-TempDevId") String userDeviceTempId, @RequestBody User user) {
         if (RateLimiter.compute(Hashing.hash(requestData + userDeviceTempId), 1).get())
