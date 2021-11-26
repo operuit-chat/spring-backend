@@ -9,6 +9,7 @@ import at.operuit.restapi.util.data.Hashing;
 import at.operuit.restapi.util.data.RateLimiter;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.concurrent.CompletableFuture;
 
 @RestController
@@ -18,15 +19,19 @@ public class UserDataController {
 
     @CrossOrigin
     @PostMapping("/data")
-    public Response<Object> getUserData(@RequestHeader("User-Data") String requestData, @RequestHeader("User-TempDevId") String userDeviceTempId, @RequestBody User user) {
-        if (RateLimiter.compute(Hashing.hash(requestData + userDeviceTempId), 1).get())
+    public Response<Object> getUserData(@RequestHeader("User-Data") String requestData, @RequestHeader("User-TempDevId") String userDeviceTempId, @RequestBody User user, HttpServletResponse response) {
+        if (RateLimiter.compute(Hashing.hash(requestData + userDeviceTempId), 1).get()) {
+            response.setStatus(50);
             return new Response<>(50, "Rate limit exceeded");
+        }
         String username = user.username();
         String password = user.password();
         if (username == null || password == null
                 || password.length() < 3
-                || username.length() != 64 || password.length() > 4096)
+                || username.length() != 64 || password.length() > 4096) {
+            response.setStatus(100);
             return new Response<>(100, "One or more arguments provided are missing or invalid");
+        }
         CompletableFuture<QueryResult> query = OperuitMain.getInstance().getDatabaseService().execute(() -> "SELECT * FROM `users` WHERE `username` = ? AND `password` = ?", username, password);
         QueryResult result = query.join();
         if (!result.hasNext())
@@ -38,17 +43,22 @@ public class UserDataController {
 
     @CrossOrigin
     @PatchMapping("/data")
-    public Response<String> updateData(@RequestHeader("User-Data") String requestData, @RequestHeader("User-TempDevId") String userDeviceTempId, @RequestBody User user) {
-        if (RateLimiter.compute(Hashing.hash(requestData + userDeviceTempId), 1).get())
+    public Response<String> updateData(@RequestHeader("User-Data") String requestData, @RequestHeader("User-TempDevId") String userDeviceTempId, @RequestBody User user, HttpServletResponse response) {
+        if (RateLimiter.compute(Hashing.hash(requestData + userDeviceTempId), 1).get()) {
+            response.setStatus(50);
             return new Response<>(50, "Rate limit exceeded");
+        }
         String username = user.username();
         String password = user.password();
         if (username == null || password == null
                 || password.length() < 3
-                || username.length() != 64 || password.length() > 4096)
+                || username.length() != 64 || password.length() > 4096) {
+            response.setStatus(100);
             return new Response<>(100, "One or more arguments provided are missing or invalid");
+        }
         CompletableFuture<QueryResult> query = OperuitMain.getInstance().getDatabaseService().execute(() -> "SELECT * FROM `users` WHERE `username` = ? AND `password` = ?", username, password);
         QueryResult result = query.join();
+        response.setStatus(result.hasNext() ? 200 : 101);
         if (!result.hasNext())
             return new Response<>(101, "Auth error");
         Row<?> row = result.next();
