@@ -58,7 +58,6 @@ public class UserDataController {
         }
         CompletableFuture<QueryResult> query = OperuitMain.getInstance().getDatabaseService().execute(() -> "SELECT * FROM `users` WHERE `username` = ? AND `password` = ?", username, password);
         QueryResult result = query.join();
-        response.setStatus(result.hasNext() ? 200 : 101);
         if (!result.hasNext())
             return new Response<>(101, "Auth error");
         Row<?> row = result.next();

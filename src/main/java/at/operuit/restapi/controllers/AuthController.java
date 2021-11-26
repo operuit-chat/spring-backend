@@ -33,7 +33,6 @@ public class AuthController {
         }
         CompletableFuture<QueryResult> query = OperuitMain.getInstance().getDatabaseService().execute(() -> "SELECT * FROM `users` WHERE `username` = ?", username);
         QueryResult result = query.join();
-        response.setStatus(result.hasNext() ? 200 : 101);
         if (result.hasNext())
             return new Response<>(101, "Username already exists");
         OperuitMain.getInstance().getDatabaseService().execute(() -> "INSERT INTO `users` (`username`, `display_name`, `password`) VALUES (?, ?, ?)",
@@ -58,7 +57,6 @@ public class AuthController {
         }
         CompletableFuture<QueryResult> query = OperuitMain.getInstance().getDatabaseService().execute(() -> "SELECT * FROM `users` WHERE `username` = ? AND `password` = ?", username, password);
         QueryResult result = query.join();
-        response.setStatus(result.hasNext() ? 200 : 102);
         if (!result.hasNext())
             return new Response<>(102, "Auth error");
         return new Response<>(200, "Success");
