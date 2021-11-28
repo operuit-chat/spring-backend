@@ -19,14 +19,14 @@ import java.util.function.Supplier;
 public record DatabaseService(Credentials credentials) {
 
     public MariadbConnection getConnection() {
-        return getConnectionFactory().create().block();
+        return connectionFactory().create().block();
     }
 
     public CompletableFuture<QueryResult> execute(Supplier<String> statement, String... args) {
         CompletableFuture<QueryResult> future = new CompletableFuture<>();
         MariadbConnection connection = getConnection();
         try {
-            QueryResultFactory resultFactory = getQueryResultFactory();
+            QueryResultFactory resultFactory = createQueryResultFactory();
             Mono.from(bindAll(connection.createStatement(statement.get()), args).execute()).blockOptional().ifPresent(mariadbResult -> mariadbResult.map(Pair::new).subscribe(pair -> {
                 Row row = pair.key();
                 RowMetadata metadata = pair.value();
@@ -41,7 +41,7 @@ public record DatabaseService(Credentials credentials) {
         return future;
     }
 
-    private MariadbConnectionConfiguration getConfiguration() {
+    private MariadbConnectionConfiguration buildConfigurationFromCredentials() {
         return MariadbConnectionConfiguration.builder()
                 .host(credentials.hostname())
                 .port(credentials.port())
@@ -51,11 +51,11 @@ public record DatabaseService(Credentials credentials) {
                 .build();
     }
 
-    private MariadbConnectionFactory getConnectionFactory() {
-        return new MariadbConnectionFactory(getConfiguration());
+    private MariadbConnectionFactory connectionFactory() {
+        return new MariadbConnectionFactory(buildConfigurationFromCredentials());
     }
-    
-    private QueryResultFactory getQueryResultFactory() {
+
+    private QueryResultFactory createQueryResultFactory() {
         return new QueryResultFactory();
     }
 
