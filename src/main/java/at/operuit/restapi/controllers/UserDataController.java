@@ -19,8 +19,8 @@ public class UserDataController {
 
     @CrossOrigin
     @PostMapping("/data")
-    public Response<Object> getUserData(@RequestHeader("User-Data") String requestData, @RequestHeader("User-TempDevId") String userDeviceTempId, @RequestBody User user, HttpServletResponse response) {
-        if (RateLimiter.compute(Hashing.hash(requestData + userDeviceTempId), 1).get()) {
+    public Response<Object> getUserData(@RequestHeader("User-TempDevId") String userDeviceTempId, @RequestBody User user, HttpServletResponse response) {
+        if (RateLimiter.compute(Hashing.hash(userDeviceTempId), 1).get()) {
             response.setStatus(50);
             return new Response<>(50, "Rate limit exceeded");
         }
@@ -43,8 +43,8 @@ public class UserDataController {
 
     @CrossOrigin
     @PatchMapping("/data")
-    public Response<String> updateData(@RequestHeader("User-Data") String requestData, @RequestHeader("User-TempDevId") String userDeviceTempId, @RequestBody User user, HttpServletResponse response) {
-        if (RateLimiter.compute(Hashing.hash(requestData + userDeviceTempId), 1).get()) {
+    public Response<String> updateData(@RequestHeader("User-TempDevId") String userDeviceTempId, @RequestBody User user, HttpServletResponse response) {
+        if (RateLimiter.compute(Hashing.hash(userDeviceTempId), 1).get()) {
             response.setStatus(50);
             return new Response<>(50, "Rate limit exceeded");
         }

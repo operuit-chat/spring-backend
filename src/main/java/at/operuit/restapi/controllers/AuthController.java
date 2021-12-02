@@ -17,8 +17,8 @@ public class AuthController {
 
     @CrossOrigin
     @PostMapping("/register")
-    public Response<String> register(@RequestHeader("User-Data") String requestData, @RequestHeader("User-TempDevId") String userDeviceTempId, @RequestBody User user, HttpServletResponse response) {
-        if (RateLimiter.compute(Hashing.hash(requestData + userDeviceTempId), 1).get()) {
+    public Response<String> register(@RequestHeader("User-TempDevId") String userDeviceTempId, @RequestBody User user, HttpServletResponse response) {
+        if (RateLimiter.compute(Hashing.hash(userDeviceTempId), 1).get()) {
             response.setStatus(50);
             return new Response<>(50, "Rate limit exceeded");
         }
@@ -42,8 +42,8 @@ public class AuthController {
 
     @CrossOrigin
     @PostMapping("/login")
-    public Response<String> login(@RequestHeader("User-Data") String requestData, @RequestHeader("User-TempDevId") String userDeviceTempId, @RequestBody User user, HttpServletResponse response) {
-        if (RateLimiter.compute(Hashing.hash(requestData + userDeviceTempId), 1).get()) {
+    public Response<String> login(@RequestHeader("User-TempDevId") String userDeviceTempId, @RequestBody User user, HttpServletResponse response) {
+        if (RateLimiter.compute(Hashing.hash(userDeviceTempId), 1).get()) {
             response.setStatus(50);
             return new Response<>(50, "Rate limit exceeded");
         }
@@ -64,8 +64,8 @@ public class AuthController {
 
     @CrossOrigin
     @GetMapping("/salt")
-    public Response<String> retrieveSalt(@RequestHeader("User-Data") String requestData, @RequestHeader("User-TempDevId") String userDeviceTempId, @RequestParam String username, HttpServletResponse response) {
-        if (RateLimiter.compute(Hashing.hash(requestData + userDeviceTempId), 1).get()) {
+    public Response<String> retrieveSalt(@RequestHeader("User-TempDevId") String userDeviceTempId, @RequestParam String username, HttpServletResponse response) {
+        if (RateLimiter.compute(Hashing.hash(userDeviceTempId), 1).get()) {
             response.setStatus(50);
             return new Response<>(50, "Rate limit exceeded");
         }
