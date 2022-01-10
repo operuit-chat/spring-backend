@@ -1,0 +1,63 @@
+package at.operuit.restapi.config;
+
+import org.springframework.context.annotation.Configuration;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.MessageChannel;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+import org.springframework.messaging.simp.config.ChannelRegistration;
+import org.springframework.messaging.simp.config.MessageBrokerRegistry;
+import org.springframework.messaging.simp.stomp.StompCommand;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
+import org.springframework.messaging.support.ChannelInterceptor;
+import org.springframework.messaging.support.MessageHeaderAccessor;
+import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
+import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
+import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
+
+import javax.annotation.Nullable;
+import java.util.Map;
+import java.util.Set;
+
+@Configuration
+@EnableWebSocketMessageBroker
+public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+
+    @Override
+    public void configureMessageBroker(MessageBrokerRegistry config) {
+        config.enableSimpleBroker("queue");
+        config.setApplicationDestinationPrefixes("/stomp");
+        config.setUserDestinationPrefix("/bridge");
+    }
+
+    @Override
+    public void registerStompEndpoints(StompEndpointRegistry registry) {
+        registry.addEndpoint("/push").setAllowedOriginPatterns("*");
+        registry.addEndpoint("/push").setAllowedOriginPatterns("*").withSockJS();
+    }
+
+    @Override
+    public void configureClientInboundChannel(ChannelRegistration registration) {
+        registration.interceptors(new ChannelInterceptor() {
+            @Override
+            public Message<?> preSend(@Nullable Message<?> message, @Nullable MessageChannel channel) {
+                if (message == null || channel == null)
+                    return null;
+                StompHeaderAccessor headerAccessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
+                if (headerAccessor == null)
+                    return message;
+                if (StompCommand.CONNECT.equals(headerAccessor.getCommand())) {
+                    Object raw = message.getHeaders().get(SimpMessageHeaderAccessor.NATIVE_HEADERS);
+                    if (raw instanceof Map) {
+                        Set<? extends Map.Entry<?, ?>> headers = ((Map<?, ?>) raw).entrySet();
+                        String token = headers.stream().filter(e -> e.getKey().equals("Operuit-Session-Authorization-Token")).map(e -> String.valueOf(e.getValue())).findFirst().orElse(null);
+                        if (token == null)
+                            return message;
+                        String finalToken = token.substring(1, token.length() - 1);
+                        headerAccessor.setUser(() -> finalToken);
+                    }
+                }
+                return message;
+            }
+        });
+    }
+}
