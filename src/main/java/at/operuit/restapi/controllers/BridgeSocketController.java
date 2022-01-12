@@ -16,6 +16,7 @@ public class BridgeSocketController {
     @MessageMapping("/push")
     public void send(BridgedMessage message) throws Exception {
         simpMessagingTemplate.convertAndSendToUser(message.getTarget(), "/queue/messages", message);
+        // todo implement sessions
     }
 
     @Getter
