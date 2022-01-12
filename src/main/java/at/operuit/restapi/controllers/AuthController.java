@@ -9,11 +9,15 @@ import at.operuit.restapi.util.data.RateLimiter;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 @RestController
 @ResponseBody
 public class AuthController {
+
+    public static Map<String, String> tokens = new HashMap<>();
 
     @CrossOrigin
     @PostMapping("/register")
