@@ -1,4 +1,13 @@
 package at.operuit.restapi.models;
 
-public record Response<T>(int code, T message) {
+import com.google.gson.Gson;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@AllArgsConstructor
+@Getter
+public abstract class Response {
+
+    private int responseCode;
+
 }
