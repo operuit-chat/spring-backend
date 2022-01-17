@@ -45,16 +45,16 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 StompHeaderAccessor headerAccessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
                 if (headerAccessor == null)
                     return message;
-                if (StompCommand.CONNECT.equals(headerAccessor.getCommand())) {
-                    Object raw = message.getHeaders().get(SimpMessageHeaderAccessor.NATIVE_HEADERS);
-                    if (raw instanceof Map) {
-                        Set<? extends Map.Entry<?, ?>> headers = ((Map<?, ?>) raw).entrySet();
-                        String token = headers.stream().filter(e -> e.getKey().equals("Operuit-Session-Authorization-Token")).map(e -> String.valueOf(e.getValue())).findFirst().orElse(null);
-                        if (token == null)
-                            return message;
-                        String finalToken = token.substring(1, token.length() - 1);
-                        headerAccessor.setUser(() -> finalToken);
-                    }
+                if (!StompCommand.CONNECT.equals(headerAccessor.getCommand()))
+                    return message;
+                Object raw = message.getHeaders().get(SimpMessageHeaderAccessor.NATIVE_HEADERS);
+                if (raw instanceof Map) {
+                    Set<? extends Map.Entry<?, ?>> headers = ((Map<?, ?>) raw).entrySet();
+                    String token = headers.stream().filter(e -> e.getKey().equals("Operuit-Session-Authorization-Token")).map(e -> String.valueOf(e.getValue())).findFirst().orElse(null);
+                    if (token == null)
+                        return message;
+                    String finalToken = token.substring(1, token.length() - 1);
+                    headerAccessor.setUser(() -> finalToken);
                 }
                 return message;
             }
