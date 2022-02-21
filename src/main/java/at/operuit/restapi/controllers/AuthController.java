@@ -68,7 +68,7 @@ public class AuthController {
         if (!result.hasNext())
             return new RawMessageResponse(102, "Auth error");
         String sessionToken = generateRandomAlphanumericToken(64);
-        tokens.put(sessionToken, username);
+        tokens.put(sessionToken, Hashing.hash(userDeviceTempId + username));
         return new LoginResponse(sessionToken); // todo encrypt session token
     }
 
